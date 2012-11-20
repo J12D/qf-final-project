@@ -1,0 +1,11 @@
+'''
+Created on Nov 20, 2012
+
+@author: vu
+'''
+import pandas as pd
+import matplotlib.pylab as plt
+import statsmodels.api as sm
+import numpy as np
+
+fx_data = pd.read_csv('full.csv', sep = ' ') 

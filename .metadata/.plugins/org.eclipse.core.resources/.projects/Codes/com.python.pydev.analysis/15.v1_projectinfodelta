@@ -1,8 +1,12 @@
 INSTUPfactor_scores
 /Users/alex/Documents/workspace/qf-final-project/Codes/src/factor_scores.py
-INFOS:&&3|1|2|0&&3|3|2|0&&3|3|2|0&&3|3|2|0&&3|3|2|0&&3|4|2|0&&3|4|2|0&&3|5|2|0
+INFOS:&&3|1|2|0&&3|3|2|0&&3|3|2|0&&3|3|2|0&&3|3|2|0&&3|4|2|0&&3|4|2|0&&3|5|2|0&&3|4|2|0&&2|6|2|0&&3|7|2|0&&3|8|2|0&&3|9|2|0
 monthly_rets=5
+sigma=9
 factor_scores=2
+alpha=8
 fx_data=3
 foreign=4
 ws=1
+carry_betas=7
+monthly_reg=6

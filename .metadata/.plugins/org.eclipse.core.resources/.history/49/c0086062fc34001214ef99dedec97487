@@ -38,12 +38,8 @@ def monthly_reg(month):
         X = month.ix[:,0] * 100.0
         Y = month.ix[:,1] * 100.0
         return stats.linregress(X,Y)[0]
+        
 
-carry_betas = foreign[['carry','rets']].groupby(level = 1).apply(monthly_reg)        
-alpha = carry_betas.mean()*12
-sigma = carry_betas.std()*np.sqrt(12)
-sharpe = alpha/sigma
-t_stat = carry_betas.mean()/carry_betas.std()*np.sqrt(len(carry_betas)) 
         
 
 foreign

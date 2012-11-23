@@ -12,15 +12,25 @@ getdata|0|/Users/alex/Documents/workspace/qf-final-project/Codes/src/getdata.py
 1=ystockquote
 -- END DICTIONARY
 -- START TREE 1
-9
+19
 !<m|0|
+TI|0|
 __r|1|__request!10@
+alp|1|alpha!19@
 car|1|carry_betas!19@
+cov|0|
 cur|0|
 for|1|foreign!19@
 fx_|1|fx_data!19@
 get|22|get_avg_daily_volume!10@get_stock_exchange!10@get_52_week_high!10@get_book_value!10@get_historical_prices!10@get_price_sales_ratio!10@get_change!10@get_ebitda!10@get_dividend_per_share!10@get_volume!10@get_52_week_low!10@get_earnings_per_share!10@get_all!10@get_price_earnings_growth_ratio!10@get_price_earnings_ratio!10@get_market_cap!10@get_price!10@get_short_ratio!10@get_price_book_ratio!10@get_50day_moving_avg!10@get_200day_moving_avg!10@get_dividend_yield!10@
+ind|0|
+mea|0|
 mon|2|monthly_rets!19@monthly_reg!18@
+ret|0|
+sha|1|sharpe!19@
+sig|1|sigma!19@
+t_s|1|t_stat!19@
+tur|0|
 ws|1|ws!19@
 -- END TREE
 -- START TREE 2

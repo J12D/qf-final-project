@@ -27,6 +27,8 @@ foreign = foreign.groupby('Currency').apply(lambda x: x.ix[:,1:].fillna(method =
 # Compute monthly returns for each currency
 monthly_rets = lambda x: x.SPOT/x.FRWD_1M.shift() - 1
 foreign['rets'] = foreign[['SPOT','FRWD_1M']].groupby(level='Currency').apply(monthly_rets).values
+
+# Compute and test carry factor
 foreign['carry'] = -(foreign.FRWD_1M/foreign.SPOT - 1)
 foreign.carry = foreign.carry.groupby(level = 'Currency').shift()
 
@@ -44,6 +46,3 @@ alpha = carry_betas.mean()*12
 sigma = carry_betas.std()*np.sqrt(12)
 sharpe = alpha/sigma
 t_stat = carry_betas.mean()/carry_betas.std()*np.sqrt(len(carry_betas)) 
-        
-
-foreign

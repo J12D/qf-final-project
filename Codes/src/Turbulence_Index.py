@@ -11,8 +11,10 @@ from scipy import stats
 import numpy as np
 from datetime import datetime as dt
 import os
-ws = os.path.expanduser('~/Documents/workspace/qf-final-project/')
-os.chdir(ws)
+
+upone = os.path.dirname(os.getcwd())
+root = os.path.dirname(upone)
+os.chdir(root)
 
 # Clean up data
 fx_data = pd.read_csv('data/full.csv')

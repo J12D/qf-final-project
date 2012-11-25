@@ -2108,6 +2108,7 @@ scipy.special.setupscons|/Users/alex/.virtual_envs/system/lib/python2.7/site-pac
 scipy.special.specfun|/Users/alex/.virtual_envs/system/lib/python2.7/site-packages/scipy-0.12.0.dev_ddd617d_20120920-py2.7-macosx-10.8-x86_64.egg/scipy/special/specfun.so
 scipy.special.special_version|/Users/alex/.virtual_envs/system/lib/python2.7/site-packages/scipy-0.12.0.dev_ddd617d_20120920-py2.7-macosx-10.8-x86_64.egg/scipy/special/special_version.py
 scipy.special.spfun_stats|/Users/alex/.virtual_envs/system/lib/python2.7/site-packages/scipy-0.12.0.dev_ddd617d_20120920-py2.7-macosx-10.8-x86_64.egg/scipy/special/spfun_stats.py
+scipy.stats
 scipy.stats.__init__|/Users/alex/.virtual_envs/system/lib/python2.7/site-packages/scipy-0.12.0.dev_ddd617d_20120920-py2.7-macosx-10.8-x86_64.egg/scipy/stats/__init__.py
 scipy.stats._binned_statistic|/Users/alex/.virtual_envs/system/lib/python2.7/site-packages/scipy-0.12.0.dev_ddd617d_20120920-py2.7-macosx-10.8-x86_64.egg/scipy/stats/_binned_statistic.py
 scipy.stats._rank|/Users/alex/.virtual_envs/system/lib/python2.7/site-packages/scipy-0.12.0.dev_ddd617d_20120920-py2.7-macosx-10.8-x86_64.egg/scipy/stats/_rank.py

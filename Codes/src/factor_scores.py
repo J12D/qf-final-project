@@ -3,11 +3,9 @@ Created on Nov 20, 2012
 
 @author: vu
 '''
-import pandas as pd
+from functions import *
 import matplotlib.pylab as plt
 import statsmodels.api as sm
-from scipy import stats
-import numpy as np
 from datetime import datetime as dt
 import os
 ws = os.path.expanduser('~/Documents/workspace/qf-final-project/')
@@ -27,22 +25,18 @@ foreign = foreign.groupby('Currency').apply(lambda x: x.ix[:,1:].fillna(method =
 # Compute monthly returns for each currency
 monthly_rets = lambda x: x.SPOT/x.FRWD_1M.shift() - 1
 foreign['rets'] = foreign[['SPOT','FRWD_1M']].groupby(level='Currency').apply(monthly_rets).values
+foreign['mom_12'] = foreign.SPOT.groupby(level='Currency').pct_change().values 
+foreign['mom_26'] = foreign.SPOT.groupby(level='Currency').pct_change(periods = 4).values
 
 # Compute and test carry factor
 foreign['carry'] = -(foreign.FRWD_1M/foreign.SPOT - 1)
 foreign.carry = foreign.carry.groupby(level = 'Currency').shift()
+foreign.mom_12 = foreign.mom_12.groupby(level = 'Currency').shift()
+foreign.mom_26 = foreign.mom_26.groupby(level = 'Currency').shift(periods = 2)
 
-def monthly_reg(month):
-    if all(month.ix[:,0].map(np.isnan)): 
-        return np.NaN
-    else:
-        month = month.dropna()
-        X = month.ix[:,0] * 100.0
-        Y = month.ix[:,1] * 100.0
-        return stats.linregress(X,Y)[0]
-
-carry_betas = foreign[['carry','rets']].groupby(level = 1).apply(monthly_reg)        
-alpha = carry_betas.mean()*12
-sigma = carry_betas.std()*np.sqrt(12)
-sharpe = alpha/sigma
-t_stat = carry_betas.mean()/carry_betas.std()*np.sqrt(len(carry_betas)) 
+carry_betas = foreign[['carry','rets']].groupby(level = 1).apply(monthly_reg)
+eval_factor(carry_betas)
+mom12_betas = foreign[['mom_12','rets']].groupby(level = 1).apply(monthly_reg)
+eval_factor(mom12_betas)
+mom26_betas = foreign[['mom_26','rets']].groupby(level = 1).apply(monthly_reg)
+eval_factor(mom26_betas)

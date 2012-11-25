@@ -12,9 +12,12 @@ import numpy as np
 from datetime import datetime as dt
 import os
 
-upone = os.path.dirname(os.getcwd())
-root = os.path.dirname(upone)
-os.chdir(root)
+#upone = os.path.dirname(os.getcwd())
+#root = os.path.dirname(upone)
+#os.chdir(root)
+ws = os.path.expanduser('~/Documents/workspace/qf-final-project/')
+os.chdir(ws)
+
 
 # Clean up data
 fx_data = pd.read_csv('data/full.csv')
@@ -50,6 +53,35 @@ for i in xrange(20,len(TI)):
     Turbulence.ix[i,'values'] = d.dot(cov.I).dot(d.T)
     
 Turbulence.index = index
-     
+Turbulence = Turbulence.dropna()
+
+from momentum import efa
+Turbulence['MA'] = efa(Turbulence.values,1,20)
+Turbulence.MA.ix[:29] = np.NaN
+
+def get_weight(interval, q, method = 'continuous'):
+    if not q:
+        return np.NaN
+    pc = np.percentile(range, q)
+    print pc
+    if method == 'continuous':
+        if pc <= 0.2:
+            return 1
+        elif pc <= 0.4:
+            return 0.8
+        elif pc <= 0.6:
+            return 0.6
+        elif pc <= 0.8:
+            return 0.4
+        else:
+            return 0.2
+    else:
+        if pc <= 0.8:
+            return 1
+        else:
+            return 0
+
+get_weight(Turbulence.values, 800)
+      
     
     

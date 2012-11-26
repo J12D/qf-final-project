@@ -7,15 +7,10 @@ from functions import *
 import matplotlib.pylab as plt
 import statsmodels.api as sm
 from datetime import datetime as dt
-import os
-ws = os.path.expanduser('~/Documents/workspace/qf-final-project/')
-os.chdir(ws)
 
 # Clean up data
-fx_data = pd.read_csv('data/full.csv')
-fx_data.ix[:,2:] = fx_data.ix[:,2:].replace('\\N', np.NaN).apply(np.float64)
-fx_data.Date = fx_data.Date.map(lambda x: x[:10])
-fx_data.Date = fx_data.Date.map(lambda x: dt.strptime(x, '%Y-%m-%d'))
+import foundation as fd
+fx_data = fd.getFxRates()
 fx_data = fx_data.set_index('Date')
 
 # Subsetting data into foreign currencies

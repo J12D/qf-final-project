@@ -10,20 +10,12 @@ import statsmodels.api as sm
 from scipy import stats
 import numpy as np
 from datetime import datetime as dt
-import os
-
-#upone = os.path.dirname(os.getcwd())
-#root = os.path.dirname(upone)
-#os.chdir(root)
-ws = os.path.expanduser('~/Documents/workspace/qf-final-project/')
-os.chdir(ws)
-
+from functions import efa
 
 # Clean up data
 import foundation as fd
-
 fx_data = fd.getFxRates()
-
+fx_data = fx_data[['Date', 'Currency', 'SPOT']]
 
 # Subsetting data into foreign currencies
 foreign = fx_data.ix[fx_data.Currency != 'USD',:]
@@ -54,7 +46,6 @@ for i in xrange(20,len(TI)):
 Turbulence.index = index
 Turbulence = Turbulence.dropna()
 
-from momentum import efa
 Turbulence['MA'] = efa(Turbulence.TI,1,30)
 Turbulence.MA.ix[:29] = np.NaN
 

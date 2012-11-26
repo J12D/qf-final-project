@@ -20,11 +20,10 @@ os.chdir(ws)
 
 
 # Clean up data
-fx_data = pd.read_csv('data/full.csv')
-fx_data = fx_data[['Date', 'Currency', 'SPOT']]
-fx_data.SPOT = fx_data.SPOT.replace('\\N', np.NaN).apply(np.float64)
-fx_data.Date = fx_data.Date.map(lambda x: x[:10])
-fx_data.Date = fx_data.Date.map(lambda x: dt.strptime(x, '%Y-%m-%d'))
+import foundation as fd
+
+fx_data = fd.getFxRates()
+
 
 # Subsetting data into foreign currencies
 foreign = fx_data.ix[fx_data.Currency != 'USD',:]

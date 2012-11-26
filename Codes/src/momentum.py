@@ -2,6 +2,11 @@ from numpy import *
 import pandas as pd
 import scipy as stats
 
+import foundation as fd
+
+# will change implementation later -> getFxRates()
+fxData=fd.getFxRatesOLD()
+
 #return the exponentially weighted moving average
 def efa(x,p,wlen):
     wlen=int(wlen)
@@ -16,4 +21,8 @@ def efa(x,p,wlen):
             data[i]+=float(weighting[j]*x[i-wlen+1+j])
     return data
 
-efa(arange(1000.0),0.97,260)
+efa(fxData,0.97,260)
+
+ema = data.copy()
+data.apply(lambda x:print x,axis=0)
+emadata=data.apply(lambda x:efa(x,0.97,260),axis=0)

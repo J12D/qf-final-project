@@ -1,5 +1,4 @@
-from numpy import *
-# import numpy as np is a better practice - avoid import *
+import numpy as np
 import pandas as pd
 import scipy as stats
 import foundation as fd
@@ -9,17 +8,18 @@ from functions import efa
 #fxData=fd.getFxRatesOLD()
 
 fxData=fd.getFxRates()
-fxData.set_index('Date')
-fxData=fxData[fxData.Currency!='USD']
-fxData=fxData.groupby('Currency').apply(lambda x: x.ix[:,1:].fillna(method = 'ffill',limit = 30 ))
+foreign = fxData[fxData.Currency!='USD']
+foreign = fxData.reset_index()
+foreign = foreign[['Date','Currency', 'SPOT']].set_index(['Currency','Date'])
+foreign = foreign.groupby(level = 0).apply(lambda x: x.fillna(method = 'ffill',limit = 30 ))
 #This breaks
 #fxData.groupby('Currency').SPOT.apply(lambda x: efa(x,0.97,260))
 
 #This works
-efa(fxData[fxData.Currency=='AUD']['SPOT'],0.97,300)
+efa(foreign.ix['AUD'].values,0.97,300)
 
 #This doesn't
-efa(fxData[fxData.Currency=='CAD']['SPOT'],0.97,300)
+efa(fxData.ix['CAD'].values,0.97,300)
 #ema = data.copy()
 # You can' use print for this
 #data.apply(lambda x:print x,axis=0)

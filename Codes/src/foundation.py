@@ -34,3 +34,21 @@ def getFxRates():
 #uncomment this to test wether the code is working correctly
 #print "The root of the project is: "+getRootDir()
 #print "FXRates start at date: "+str(getFxRates().Index[0])
+
+def get_monthly_CPI():
+	os.chdir(getRootDir())
+	cpi = pd.read_csv('data/cpi.csv')
+	cpi.Date = cpi.Date.map(lambda x: x[:10])
+	cpi.Date = cpi.Date.map(lambda x: dt.strptime(x, '%Y-%m-%d'))
+	cpi = cpi.set_index('Date')
+	cpi = cpi.groupby('Currency').asfreq('BM', method = 'bfill')
+	cpi = cpi['CPI']
+	
+	fx_data = pd.read_csv('data/full.csv')
+	fx_data = fx_data[['Date', 'Currency', 'SPOT']]
+	fx_data.ix[:,2:] = fx_data.ix[:,2:].replace('\\N', np.NaN).apply(np.float64)
+	fx_data.Date = fx_data.Date.map(lambda x: x[:10])
+	fx_data.Date = fx_data.Date.map(lambda x: dt.strptime(x, '%Y-%m-%d'))
+	fx_data = fx_data.set_index('Date')
+	fx_data = fx_data.groupby('Currency').apply(lambda x: x.ix[:,1:].fillna(method = 'ffill',limit = 30 ).asfreq('BM'))
+	return fx_data.join(cpi)

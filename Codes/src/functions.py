@@ -28,14 +28,14 @@ def eval_factor(betas):
 
 #return the exponentially weighted moving average
 def efa(x,p,wlen):
-    wlen=int(wlen)
-    weighting=np.arange(float(wlen))
-    for i in range(wlen):
-        weighting[i]=pow(p,i+1)
-    sums=sum(weighting)
-    weighting/=sums
-    data=np.zeros(len(x))
-    for i in range(wlen-1,len(x)):
-    	data[i]=float(weighting*x[i-(wlen-1):i])
+	wlen=int(wlen)
+	weighting=np.arange(float(wlen))
+	for i in range(wlen):
+		weighting[i]=pow(p,i+1)
+		sums=sum(weighting)
+	weighting/=sums
+	data=np.zeros(len(x))
+	for i in range(wlen-1,len(x)):
+		data[i]=np.vdot(weighting,x[i-(wlen-1):i+1])
     return data
 

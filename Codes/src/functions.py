@@ -36,7 +36,6 @@ def efa(x,p,wlen):
     weighting/=sums
     data=np.zeros(len(x))
     for i in range(wlen-1,len(x)):
-        for j in range(wlen):
-            data[i]+=float(weighting[j]*x[i-wlen+1+j])
+    	data[i]=float(weighting*x[i-(wlen-1):i])
     return data
 

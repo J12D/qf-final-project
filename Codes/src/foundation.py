@@ -6,9 +6,11 @@ import numpy as np
 # Assuming our code is in /Codes/src (or another 2-dir deep structure). 
 # Should only be called once
 def getRootDir():
-    upone = os.path.dirname(os.getcwd())
-    root = os.path.dirname(upone)
-    return root
+	if(os.path.basename(os.getcwd())=='qf-final-project'):
+		return os.getcwd()
+	upone = os.path.dirname(os.getcwd())
+	root = os.path.dirname(upone)
+	return root
 
 def getFxRatesOLD():
     #import fxSpotRates

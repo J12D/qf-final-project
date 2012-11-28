@@ -11,7 +11,6 @@ from datetime import datetime as dt
 # Clean up data
 import foundation as fd
 fx_data = fd.getFxRates()
-fx_data = fx_data.set_index('Date')
 
 # Subsetting data into foreign currencies
 foreign = fx_data.ix[fx_data.Currency != 'USD',:]

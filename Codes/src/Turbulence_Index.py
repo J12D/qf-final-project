@@ -15,20 +15,20 @@ from functions import efa
 # Clean up data
 import foundation as fd
 fx_data = fd.getFxRates()
-fx_data = fx_data[['Date', 'Currency', 'SPOT']]
+fx_data = fx_data[['Currency', 'SPOT']]
 
 # Subsetting data into foreign currencies
 foreign = fx_data.ix[fx_data.Currency != 'USD',:]
-foreign = foreign.set_index(['Currency', 'Date'])
-foreign = foreign.groupby(level = 0).apply(lambda x: x.fillna(method = 'ffill',limit = 30 ))
-foreign['spot_rets'] = foreign.groupby(level = 0).SPOT.pct_change()
+foreign = foreign.set_index('Currency', append = True)
+foreign = foreign.groupby(level = 1).apply(lambda x: x.fillna(method = 'ffill',limit = 30 ))
+foreign['spot_rets'] = foreign.groupby(level = 1).SPOT.pct_change()
 TI = pd.DataFrame()
-for name, rets in foreign.groupby(level = 0).spot_rets:
+for name, rets in foreign.groupby(level = 1).spot_rets:
     if TI.empty:
-        TI = pd.DataFrame(index = [i[1] for i in rets.index])
+        TI = pd.DataFrame(index = [i[0] for i in rets.index])
         TI[name] = rets.values
     else:
-        TI = TI.join(pd.Series(rets.values, index = [i[1] for i in rets.index], name = name))
+        TI = TI.join(pd.Series(rets.values, index = [i[0] for i in rets.index], name = name))
 
 TI = TI.dropna()
 index = TI.index

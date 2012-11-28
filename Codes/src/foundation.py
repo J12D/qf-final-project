@@ -26,6 +26,7 @@ def getFxRates():
     fx_data.ix[:,2:] = fx_data.ix[:,2:].replace('\\N', np.NaN).apply(np.float64)
     fx_data.Date = fx_data.Date.map(lambda x: x[:10])
     fx_data.Date = fx_data.Date.map(lambda x: dt.strptime(x, '%Y-%m-%d'))
+    fx_data = fx_data.set_index('Date')
     return fx_data
 
 #uncomment this to test wether the code is working correctly

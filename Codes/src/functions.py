@@ -34,7 +34,7 @@ def efa(x,p,wlen):
 		weighting[i]=pow(p,i+1)
 		sums=sum(weighting)
 	weighting/=sums
-	data=np.zeros(len(x))
+	data=np.copy(x)
 	for i in range(wlen-1,len(x)):
 		data[i]=np.vdot(weighting,x[i-(wlen-1):i+1])
 	return data

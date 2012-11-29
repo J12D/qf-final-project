@@ -11,6 +11,4 @@ Team mates:
 * Vu Le,
 * Arthur Chang,
 * Julian Debus
-* Jae won Jeong
-* Joy Lin
 * Wissam Baalbaki

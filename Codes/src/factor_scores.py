@@ -1,8 +1,3 @@
-'''
-Created on Nov 20, 2012
-
-@author: vu
-'''
 from functions import *
 import matplotlib.pylab as plt
 import statsmodels.api as sm
@@ -27,6 +22,12 @@ foreign['carry'] = -(foreign.FRWD_1M/foreign.SPOT - 1)
 foreign.carry = foreign.carry.groupby(level = 'Currency').shift()
 foreign.mom_12 = foreign.mom_12.groupby(level = 'Currency').shift()
 foreign.mom_26 = foreign.mom_26.groupby(level = 'Currency').shift(periods = 2)
+
+# zscore = lambda x: (x-np.mean(x))/np.std(x)
+# 
+# # This seems to work (very weird)
+# foreign = foreign.groupby(level = 1).dropna()
+# print foreign.groupby(level = 1).carry.transform(zscore)
 
 carry_betas = foreign[['carry','rets']].groupby(level = 1).apply(monthly_reg)
 eval_factor(carry_betas)

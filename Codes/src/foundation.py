@@ -37,12 +37,12 @@ def getFxRates():
 
 def get_monthly_CPI():
 	os.chdir(getRootDir())
-	cpi = pd.read_csv('data/cpi.csv')
+	cpi = pd.read_csv('data/normCPI.csv')
 	cpi.Date = cpi.Date.map(lambda x: x[:10])
 	cpi.Date = cpi.Date.map(lambda x: dt.strptime(x, '%Y-%m-%d'))
 	cpi = cpi.set_index('Date')
 	cpi = cpi.groupby('Currency').asfreq('BM', method = 'bfill')
-	cpi = cpi['CPI']
+	cpi = cpi[['CPI','Currency']]
 	
 	fx_data = pd.read_csv('data/full.csv')
 	fx_data = fx_data[['Date', 'Currency', 'SPOT']]

@@ -3,6 +3,7 @@ import matplotlib.pylab as plt
 import statsmodels.api as sm
 from datetime import datetime as dt
 import scipy.stats.stats as st
+import pandas as pd
 
 # Clean up data
 import foundation as fd
@@ -32,7 +33,7 @@ foreign.mom_26 = foreign.mom_26.groupby(level = 'Currency').shift(periods = 2)
 # zscore = lambda x: (x-st.nanmean(x))/st.nanstd(x)
 # Wraper for the zscore lambda
 # def smart_zscore(x):
-#     if(np.isnan(x).all()):
+#     if(pd.isnull(x).all()):
 #         return x
 #     else:
 #         return zscore(x)

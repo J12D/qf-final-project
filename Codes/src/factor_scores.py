@@ -27,23 +27,14 @@ foreign.carry = foreign.carry.groupby(level = 'Currency').shift()
 foreign.mom_12 = foreign.mom_12.groupby(level = 'Currency').shift()
 foreign.mom_26 = foreign.mom_26.groupby(level = 'Currency').shift(periods = 2)
 
-# All nan approaches have resulted in unwanted behavior/way too many deleted entries:
-# This code should ignore all nan-values (just return them unmodified) and transform only
-# non-nan values
-# zscore = lambda x: (x-st.nanmean(x))/st.nanstd(x)
-# Wraper for the zscore lambda
-# def smart_zscore(x):
-#     if(pd.isnull(x).all()):
-#         return x
-#     else:
-#         return zscore(x)
-#
-# # This seems to work (very weird)
-# foreign = foreign.groupby(level = 1).dropna()
-# print foreign.groupby(level = 1).carry.transform(zscore)
+zscore = lambda x: (x-np.mean(x))/np.std(x)
 
-carry_betas = foreign[['carry','rets']].groupby(level = 1).apply(monthly_reg)
+carrymatrix = foreign[['carry','rets']].groupby(level = 1).dropna()
+carrymatrix.carry=carrymatrix.carry.groupby(level = 1).transform(zscore)
+
+carry_betas = carrymatrix.groupby(level = 1).apply(monthly_reg)
 eval_factor(carry_betas)
+
 mom12_betas = foreign[['mom_12','rets']].groupby(level = 1).apply(monthly_reg)
 eval_factor(mom12_betas)
 mom26_betas = foreign[['mom_26','rets']].groupby(level = 1).apply(monthly_reg)

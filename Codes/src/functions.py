@@ -6,6 +6,8 @@ Created on Nov 24, 2012
 import pandas as pd
 from scipy import stats
 import numpy as np
+import matplotlib
+import matplotlib.pylab as plt
 
 def monthly_reg(month):
     if all(month.ix[:,0].map(np.isnan)): 
@@ -48,22 +50,22 @@ def rolling_tstat(x):
     return rtstat
 
 def plotPanel(betaSeries):
-    cumbetas=np.cumprod(carry_betas/100+1)-1
+    cumbetas=np.cumprod(betaSeries/100+1)-1
     fig=plt.figure()
     ax1 = fig.add_subplot(411)
     ax1.set_title('Carry betas')
-    ax1.yaxis.set_major_locator(MaxNLocator(3))
-    carry_betas.plot()
+    ax1.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(3))
+    betaSeries.plot()
     ax2 = fig.add_subplot(412)
     ax2.set_title('Cumulative Carry betas')
-    ax2.yaxis.set_major_locator(MaxNLocator(3))
+    ax2.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(3))
     cumbetas.plot()
     ax3 = fig.add_subplot(413)
     ax3.set_title('Rolling Mean: Carry betas')
-    ax3.yaxis.set_major_locator(MaxNLocator(3))
-    pd.expanding_mean(carry_betas).plot()
+    ax3.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(3))
+    pd.expanding_mean(betaSeries).plot()
     ax4 = fig.add_subplot(414)
     ax4.set_title('Rolling t-stat: Carry betas')
-    ax4.yaxis.set_major_locator(MaxNLocator(3))
-    rolling_tstat(carry_betas).plot()
+    ax4.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(3))
+    rolling_tstat(betaSeries).plot()
     fig.tight_layout(pad = 1.1)

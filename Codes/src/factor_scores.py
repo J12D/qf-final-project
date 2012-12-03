@@ -73,4 +73,12 @@ return results.params.values
 
 multi_reg = foreign[['rets', 'carry_z', 'mom26_z', 'PPP_z']]
 
-month = multi_reg[100:130]
+mom12matrix = foreign[['mom_12','rets']].groupby(level = 1).dropna()
+mom12matrix.mom_12 = mom12matrix.mom_12.groupby(level = 1).transform(zscore)
+mom26matrix = foreign[['mom_26','rets']].groupby(level = 1).dropna()
+mom26matrix.mom_26 = mom26matrix.mom_26.groupby(level = 1).transform(zscore)
+
+plotPanel(carry_betas)
+plotPanel(mom26_betas)
+plotPanel(PPP_betas)
+

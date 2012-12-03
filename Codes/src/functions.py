@@ -39,3 +39,10 @@ def efa(x,p,wlen):
 		data[i]=np.vdot(weighting,x[i-(wlen-1):i+1])
 	return data
 
+def rolling_tstat(x):
+    emean=pd.expanding_mean(x)
+    estd=pd.expanding_std(x)
+    t=np.arange(1,len(x)+1)
+    esqr=np.sqrt(t)
+    rtstat=(emean/estd)*esqr
+    return rtstat

@@ -27,20 +27,10 @@ foreign.carry = foreign.carry.groupby(level = 'Currency').shift()
 foreign.mom_12 = foreign.mom_12.groupby(level = 'Currency').shift()
 foreign.mom_26 = foreign.mom_26.groupby(level = 'Currency').shift(periods = 2)
 
-zscore = lambda x: (x-np.mean(x))/np.std(x)
-
-carrymatrix = foreign[['carry','rets']].groupby(level = 1).dropna()
-carrymatrix.carry=carrymatrix.carry.groupby(level = 1).transform(zscore)
-carry_betas = carrymatrix.groupby(level = 1).apply(monthly_reg)
+carry_betas = foreign[['carry','rets']].groupby(level = 1).apply(monthly_reg)
 eval_factor(carry_betas)
-
-mom12matrix = foreign[['mom_12','rets']].groupby(level = 1).dropna()
-mom12matrix.mom_12 = mom12matrix.mom_12.groupby(level = 1).transform(zscore)
 mom12_betas = foreign[['mom_12','rets']].groupby(level = 1).apply(monthly_reg)
 eval_factor(mom12_betas)
-
-mom26matrix = foreign[['mom_26','rets']].groupby(level = 1).dropna()
-mom26matrix.mom_26 = mom26matrix.mom_26.groupby(level = 1).transform(zscore)
 mom26_betas = foreign[['mom_26','rets']].groupby(level = 1).apply(monthly_reg)
 eval_factor(mom26_betas)
 
@@ -52,7 +42,7 @@ US_CPI.name = 'US_CPI'
 US_CPI = US_CPI.reset_index() 
 US_CPI = US_CPI.rename(columns = {'index': 'Date'})
 
-lag = 3
+lag = 12*3
 
 def PPP(df):
     us = US_CPI.copy()
@@ -66,5 +56,19 @@ foreign.PPP = foreign.PPP.groupby(level = 'Currency').shift(periods = lag)
 PPP_betas = foreign[['PPP','rets']].groupby(level = 1).apply(monthly_reg)
 eval_factor(PPP_betas)
 
-((1+carry_betas/100).cumprod()-1).plot()
-plt.show()
+# Z=scoring the factor scores
+def z_score(currencies):
+    if not all(currencies.map(np.isnan)):
+        return np.NaN
+    else:
+        zscore = lambda x: (x-np.mean(x))/np.std(x)
+        return zscore(currencies)
+
+carrymatrix = foreign[['carry','rets']].groupby(level = 1).dropna()
+carrymatrix.carry=carrymatrix.carry.groupby(level = 1).transform(zscore)
+
+
+mom12matrix = foreign[['mom_12','rets']].groupby(level = 1).dropna()
+mom12matrix.mom_12 = mom12matrix.mom_12.groupby(level = 1).transform(zscore)
+mom26matrix = foreign[['mom_26','rets']].groupby(level = 1).dropna()
+mom26matrix.mom_26 = mom26matrix.mom_26.groupby(level = 1).transform(zscore)

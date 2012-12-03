@@ -39,3 +39,9 @@ def efa(x,p,wlen):
 		data[i]=np.vdot(weighting,x[i-(wlen-1):i+1])
 	return data
 
+def z_score(data):
+    if all(data.map(np.isnan)):
+        return np.NaN
+    else:
+        return (data - data.mean())/data.std()
+

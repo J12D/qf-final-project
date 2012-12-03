@@ -42,7 +42,7 @@ US_CPI.name = 'US_CPI'
 US_CPI = US_CPI.reset_index() 
 US_CPI = US_CPI.rename(columns = {'index': 'Date'})
 
-lag = 12*3
+lag = 24
 
 def PPP(df):
     us = US_CPI.copy()
@@ -52,23 +52,25 @@ def PPP(df):
 
 foreign_CPI['PPP'] = foreign_CPI.groupby(level='Currency').apply(PPP).values
 foreign = foreign.join(foreign_CPI.PPP)
+foreign.PPP = foreign.PPP.groupby(level = 'Currency').transform(lambda x: -(x/x[0]))
 foreign.PPP = foreign.PPP.groupby(level = 'Currency').shift(periods = lag)
 PPP_betas = foreign[['PPP','rets']].groupby(level = 1).apply(monthly_reg)
 eval_factor(PPP_betas)
 
 # Z=scoring the factor scores
-def z_score(currencies):
-    if not all(currencies.map(np.isnan)):
-        return np.NaN
-    else:
-        zscore = lambda x: (x-np.mean(x))/np.std(x)
-        return zscore(currencies)
+foreign['carry_z'] = foreign.carry.groupby(level = 1).transform(z_score)
+foreign['mom26_z'] = foreign.mom_26.groupby(level = 1).transform(z_score)
+foreign['PPP_z'] = foreign.PPP.groupby(level = 1).transform(z_score)
 
-carrymatrix = foreign[['carry','rets']].groupby(level = 1).dropna()
-carrymatrix.carry=carrymatrix.carry.groupby(level = 1).transform(zscore)
+def multi_reg(month):
+    
+Y = month.ix[:,0]
+X = month.ix[:,1:]
+X = sm.add_constant(X)
+reg = sm.OLS(Y, X)
+results = reg.fit()
+return results.params.values
 
+multi_reg = foreign[['rets', 'carry_z', 'mom26_z', 'PPP_z']]
 
-mom12matrix = foreign[['mom_12','rets']].groupby(level = 1).dropna()
-mom12matrix.mom_12 = mom12matrix.mom_12.groupby(level = 1).transform(zscore)
-mom26matrix = foreign[['mom_26','rets']].groupby(level = 1).dropna()
-mom26matrix.mom_26 = mom26matrix.mom_26.groupby(level = 1).transform(zscore)
+month = multi_reg[100:130]

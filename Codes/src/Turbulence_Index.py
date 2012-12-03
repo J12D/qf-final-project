@@ -72,6 +72,7 @@ def get_weight(interval, q, method = 'continuous'):
     else:
         raise ValueError('Unrecognized method')
 
+
 Turbulence['cont_weight'] = np.NaN
 Turbulence['discrete_weight'] = np.NaN
 for i in xrange(3*365+1,len(Turbulence)):
@@ -79,7 +80,9 @@ for i in xrange(3*365+1,len(Turbulence)):
     get_weight(Turbulence.TI[(i-3*365+1):(i-1)], Turbulence.TI[i-1])
     Turbulence.ix[i,'discrete_weight'] =\
     get_weight(Turbulence.TI[(i-3*365+1):(i-1)], Turbulence.TI[i-1], method = 'discrete')
-    
-         
+
+Turbulence = Turbulence.reset_index()
+Turbulence.columns = ['Date', 'TI', 'MA', 'cont', 'discrete']
+Turbulence.to_csv('data/TI')         
     
     

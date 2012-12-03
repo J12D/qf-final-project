@@ -43,7 +43,7 @@ def get_monthly_CPI():
 	cpi = cpi.set_index('Date')
 	cpi = cpi.groupby('Currency').asfreq('BM', method = 'bfill')
 	cpi = cpi['CPI']
-	
+	#
 	fx_data = pd.read_csv('data/full.csv')
 	fx_data = fx_data[['Date', 'Currency', 'SPOT']]
 	fx_data.ix[:,2:] = fx_data.ix[:,2:].replace('\\N', np.NaN).apply(np.float64)
@@ -52,3 +52,21 @@ def get_monthly_CPI():
 	fx_data = fx_data.set_index('Date')
 	fx_data = fx_data.groupby('Currency').apply(lambda x: x.ix[:,1:].fillna(method = 'ffill',limit = 30 ).asfreq('BM'))
 	return fx_data.join(cpi)
+
+
+def get_TI():
+	os.chdir(getRootDir())
+	TI = pd.read_csv('data/TI.csv')
+	TI=TI[['Date', 'cont', 'discrete']]
+	TI.Date = TI.Date.map(lambda x: x[:10])
+	TI.Date = TI.Date.map(lambda x: dt.strptime(x, '%Y-%m-%d'))
+	#
+	carry = pd.read_csv('data/carry.csv')
+	carry.Date = carry.Date.map(lambda x: x[:10])
+	carry.Date = carry.Date.map(lambda x: dt.strptime(x, '%Y-%m-%d'))
+	carry = carry [['Date','betas']]
+	#
+	TI = TI.set_index('Date')
+	carry = carry.set_index('Date')
+	data = carry.join(TI).dropna()
+	return data

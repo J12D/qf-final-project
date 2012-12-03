@@ -41,14 +41,12 @@ def efa(x,p,wlen):
 		data[i]=np.vdot(weighting,x[i-(wlen-1):i+1])
 	return data
 
-<<<<<<< HEAD
 def z_score(data):
     if all(data.map(np.isnan)):
         return np.NaN
     else:
         return (data - data.mean())/data.std()
 
-=======
 def rolling_tstat(x):
     emean=pd.expanding_mean(x)
     estd=pd.expanding_std(x)
@@ -77,4 +75,3 @@ def plotPanel(betaSeries):
     ax4.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(3))
     rolling_tstat(betaSeries).plot()
     fig.tight_layout(pad = 1.1)
->>>>>>> 57381fa0a2714bfc9104cc7287414d5d2bdee9d3

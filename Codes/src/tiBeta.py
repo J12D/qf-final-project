@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
 
 def corrMatrix(carry, mom, value):
     dict = {'Carry' : carry, 'Mom' : mom, 'PPP' : value }
@@ -15,22 +14,27 @@ def tiCarryPlot(getTIresult):
     cumConBetas = np.cumprod(conCarry/100+1)-1
     cumDisBetas = np.cumprod(disCarry/100+1)-1
 
-    pp = PdfPages('ticompare.pdf')
     fig = plt.figure()
 
-    ax1 = fig.add_subplot(211)
+    ax1 = fig.add_subplot(311)
     ax1.set_title('Cumulative Betas')
     cumBetas.plot(style='r',label='Original Beta')
-    cumConBetas.plot(style='b', label='Continuous Weights')
+    cumConBetas.plot(style='b', label='Discrete Weights')
     cumDisBetas.plot(style='g', label='Digital Weights')
     plt.legend(loc=2)
 
-    ax2 = fig.add_subplot(212)
-    ax2.set_title('Weights')
-    getTIresult.ix[:,1].plot(style='b', label='Continuous')
-    getTIresult.ix[:,2].plot(style='g', label='Digital')
-    plt.legend(loc=2)
+    ax2 = fig.add_subplot(312)
+    ax2.set_title('Discrete Weights')
+    getTIresult.ix[:,1].plot(style='b')
+    plt.ylim([0, 1.2])
+    plt.yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2])
+
+    ax3 = fig.add_subplot(313)
+    ax3.set_title('Digital Weights')
+    getTIresult.ix[:,2].plot(style='g')
+    plt.ylim([-0.1, 1.1])
+    plt.yticks([-0.1, 0.1, 0.3, 0.5, 0.7, 0.9, 1.1])
 
     fig.tight_layout()
-    pp.savefig()
-    pp.close()
+    plt.show()
+

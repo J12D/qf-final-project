@@ -44,6 +44,8 @@ def efa(x,p,wlen):
 def z_score(data):
     if all(data.map(np.isnan)):
         return np.NaN
+    elif all(data.map(lambda x: x == -1)):
+        return np.NaN
     else:
         return (data - data.mean())/data.std()
 
@@ -76,3 +78,11 @@ def plotPanel(betaSeries, name):
     ax4.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(3))
     rolling_tstat(betaSeries).plot()
     fig.tight_layout(pad = 1.1)
+    
+def strat(data):
+    sorted_rets = data.sort('forecast')
+    ilong = sum(sorted_rets.rets[-3:].values*1/6)
+    ishort = sum(sorted_rets.rets[:3].values*1/6) 
+    return ilong - ishort
+
+

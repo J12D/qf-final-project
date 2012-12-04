@@ -56,6 +56,7 @@ def rolling_tstat(x):
     return rtstat
 
 def plotPanel(betaSeries, name):
+    betaSeries=betaSeries['1995-01-01':]
     cumbetas=np.cumprod(betaSeries/100+1)-1
     fig=plt.figure()
     ax1 = fig.add_subplot(411)

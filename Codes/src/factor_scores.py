@@ -42,13 +42,14 @@ US_CPI.name = 'US_CPI'
 US_CPI = US_CPI.reset_index() 
 US_CPI = US_CPI.rename(columns = {'index': 'Date'})
 
-lag = 24
+lag = 18
 
 def PPP(df):
     us = US_CPI.copy()
     us['Currency'] = df.index[0][0]
     us = us.set_index(['Currency','Date'])
     return df.SPOT*df.CPI/us.US_CPI
+
 
 foreign_CPI['PPP'] = foreign_CPI.groupby(level='Currency').apply(PPP).values
 foreign = foreign.join(foreign_CPI.PPP)
@@ -62,21 +63,152 @@ foreign['carry_z'] = foreign.carry.groupby(level = 1).transform(z_score)
 foreign['mom26_z'] = foreign.mom_26.groupby(level = 1).transform(z_score)
 foreign['PPP_z'] = foreign.PPP.groupby(level = 1).transform(z_score)
 
-def multi_reg(month):
-    
-Y = month.ix[:,0]
-X = month.ix[:,1:]
-X = sm.add_constant(X)
-reg = sm.OLS(Y, X)
-results = reg.fit()
-return results.params.values
+month = foreign[['rets','carry_z', 'PPP_z', 'mom26_z']].dropna()
+month = month.reset_index()
+month.columns = ['Currency', 'Date'] + list(month.columns[2:])
+dates = np.unique(month.Date.values)
+month = month.set_index(['Date', 'Currency'])
+month['forecast'] = np.NaN
 
-multi_reg = foreign[['rets', 'carry_z', 'mom26_z', 'PPP_z']]
 
-mom12matrix = foreign[['mom_12','rets']].groupby(level = 1).dropna()
-mom12matrix.mom_12 = mom12matrix.mom_12.groupby(level = 1).transform(zscore)
-mom26matrix = foreign[['mom_26','rets']].groupby(level = 1).dropna()
-mom26matrix.mom_26 = mom26matrix.mom_26.groupby(level = 1).transform(zscore)
+#===============================================================================
+# 3 factor model
+#===============================================================================
+rolling_multi = pd.DataFrame()
+for date in dates:
+    window = month.ix[date]
+    Y = window.ix[:,0]
+    X = window[['carry_z', 'PPP_z', 'mom26_z']]
+    X = sm.add_constant(X)
+    reg = sm.OLS(Y, X)
+    results = reg.fit().params
+    day_reg = pd.DataFrame({'carry':results.ix['carry_z'],
+                      'PPP':results.ix['PPP_z'],
+                      'mom': results.ix['mom26_z']},
+                           columns = ['carry','PPP', 'mom'], index = [date])
+    if len(rolling_multi) == 0: 
+        rolling_multi = day_reg.copy()
+    else:
+        rolling_multi = rolling_multi.append(day_reg)
+
+rolling_multi = pd.expanding_mean(rolling_multi)
+for date in dates:
+    month.ix[date,'forecast'] = month.ix[date,1:-1].apply(lambda x: sum(x*rolling_multi.ix[date].values), axis = 1).values
+month.forecast = month.forecast.shift()
+month = month.dropna()
+        
+# Raw
+strat_rets = month.groupby(level = 0).apply(strat)
+eval_factor(strat_rets)
+
+# Continuous condition
+Turbulence = fd.get_TI()
+TI = Turbulence.cont
+condition = rolling_multi.copy()
+condition = condition.ix['1996':]
+TI.index = condition.index
+condition.carry = condition.carry * TI
+month2 = month.copy()
+for date in dates:
+    if date in condition.index:
+        month2.ix[date,'forecast'] = month2.ix[date,1:-1].apply(lambda x: sum(x*condition.ix[date].values), axis = 1).values
+    else:
+        month2.ix[date,'forecast'] = np.NaN
+month2 = month2.dropna()
+month2.forecast = month2.forecast.shift()
+month2 = month2.dropna()
+strat2_rets = month2.groupby(level = 0).apply(strat)
+eval_factor(strat2_rets)
+
+# Discrete condition
+TI = Turbulence.discrete
+condition = rolling_multi.copy()
+condition = condition.ix['1996':]
+TI.index = condition.index
+condition.carry = condition.carry * TI
+month2 = month.copy()
+for date in dates:
+    if date in condition.index:
+        month2.ix[date,'forecast'] = month2.ix[date,1:-1].apply(lambda x: sum(x*condition.ix[date].values), axis = 1).values
+    else:
+        month2.ix[date,'forecast'] = np.NaN
+month2 = month2.dropna()
+month2.forecast = month2.forecast.shift()
+month2 = month2.dropna()
+strat2_rets = month2.groupby(level = 0).apply(strat)
+eval_factor(strat2_rets)
+
+
+
+
+#===============================================================================
+# 2 factor model
+#===============================================================================
+rolling_multi = pd.DataFrame()
+for date in dates:
+    window = month.ix[date]
+    Y = window.ix[:,0]
+    X = window[['carry_z', 'PPP_z']]
+    X = sm.add_constant(X)
+    reg = sm.OLS(Y, X)
+    results = reg.fit().params
+    day_reg = pd.DataFrame({'carry':results.ix['carry_z'],
+                      'PPP':results.ix['PPP_z']},
+                           columns = ['carry','PPP'], index = [date])
+    if len(rolling_multi) == 0: 
+        rolling_multi = day_reg.copy()
+    else:
+        rolling_multi = rolling_multi.append(day_reg)
+rolling_multi = pd.expanding_mean(rolling_multi)
+for date in dates:
+    month.ix[date,'forecast'] = month.ix[date,1:-2].apply(lambda x: sum(x*rolling_multi.ix[date].values), axis = 1).values
+month.forecast = month.forecast.shift()
+month = month.dropna()
+        
+# Raw
+strat_rets = month.groupby(level = 0).apply(strat)
+eval_factor(strat_rets)
+
+# Continuous condition
+Turbulence = fd.get_TI()
+TI = Turbulence.cont
+condition = rolling_multi.copy()
+condition = condition.ix['1996':]
+TI.index = condition.index
+condition.carry = condition.carry * TI
+month2 = month.copy()
+for date in dates:
+    if date in condition.index:
+        month2.ix[date,'forecast'] = month2.ix[date,1:-2].apply(lambda x: sum(x*condition.ix[date].values), axis = 1).values
+    else:
+        month2.ix[date,'forecast'] = np.NaN
+month2 = month2.dropna()
+month2.forecast = month2.forecast.shift()
+month2 = month2.dropna()
+strat2_rets = month2.groupby(level = 0).apply(strat)
+eval_factor(strat2_rets)
+
+# Discrete condition
+TI = Turbulence.discrete
+condition = rolling_multi.copy()
+condition = condition.ix['1996':]
+TI.index = condition.index
+condition.carry = condition.carry * TI
+month2 = month.copy()
+for date in dates:
+    if date in condition.index:
+        month2.ix[date,'forecast'] = month2.ix[date,1:-2].apply(lambda x: sum(x*condition.ix[date].values), axis = 1).values
+    else:
+        month2.ix[date,'forecast'] = np.NaN
+month2 = month2.dropna()
+month2.forecast = month2.forecast.shift()
+month2 = month2.dropna()
+strat2_rets = month2.groupby(level = 0).apply(strat)
+eval_factor(strat2_rets)
+
+
+
+
 
 plotPanel(carry_betas)
 plotPanel(mom26_betas)

@@ -57,23 +57,23 @@ def rolling_tstat(x):
     rtstat=(emean/estd)*esqr
     return rtstat
 
-def plotPanel(betaSeries):
+def plotPanel(betaSeries, name):
     cumbetas=np.cumprod(betaSeries/100+1)-1
     fig=plt.figure()
     ax1 = fig.add_subplot(411)
-    ax1.set_title('Carry betas')
+    ax1.set_title(name)
     ax1.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(3))
     betaSeries.plot()
     ax2 = fig.add_subplot(412)
-    ax2.set_title('Cumulative Carry betas')
+    ax2.set_title('Cumulative '+name)
     ax2.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(3))
     cumbetas.plot()
     ax3 = fig.add_subplot(413)
-    ax3.set_title('Rolling Mean: Carry betas')
+    ax3.set_title('Rolling Mean: '+name)
     ax3.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(3))
     pd.expanding_mean(betaSeries).plot()
     ax4 = fig.add_subplot(414)
-    ax4.set_title('Rolling t-stat: Carry betas')
+    ax4.set_title('Rolling t-stat: '+name)
     ax4.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(3))
     rolling_tstat(betaSeries).plot()
     fig.tight_layout(pad = 1.1)
